@@ -66,16 +66,12 @@ void ofApp::update(){
 		grayDiff.absDiff(grayBg, grayImage);
 		grayDiff.threshold(thresholdValue);
 		
-		//use these FX when seperating blobs
-		//grayDiff.blur(blur);
-		//grayDiff.blurGaussian(gaussianBlur);
-
-		/*for (int i = 0; i < dilateMultiple; i++) {
+		for (int i = 0; i < dilateMultiple; i++) {
 		grayDiff.dilate();
 		}
 		for (int i = 0; i < erodeMultiple; i++) {
 		grayDiff.erode();
-		}*/
+		}
 
 		//would be great if this was a shader...
 		capturedImg.setFromPixels(colorImg.getPixels());
@@ -83,7 +79,6 @@ void ofApp::update(){
 		multipliedImg = multImage(grayDiff.getPixels(), capturedImg);
 
 		multipliedImg = distributeBrightness(multipliedImg);
-
 
 		//this creates the multilayered img
 		layeredImg = layeringBrightness(multipliedImg); //was capturedImg
@@ -125,7 +120,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(ofColor::red);
+	if (!mode) {
+		ofBackground(ofColor::red);
+	}
+	else {
+		ofBackground(ofColor::white);
+	}
 
 	if (pdfIt) {
 		ofBeginSaveScreenAsPDF("layerImage" + ofToString(ofGetElapsedTimeMillis()) + ".pdf", false);
@@ -160,7 +160,14 @@ void ofApp::draw(){
 		ofTranslate(layeredImg.getWidth(), colorImg.getWidth());
 		ofPushStyle();
 		//drawPoints(allBlobs);
-		drawContours(allBlobs);
+		if (saveFill) {
+			fillin = true;
+			drawContours(allBlobs);
+		}
+		if (saveOutline) {
+			fillin = false;
+			drawContours(allBlobs);
+		}
 		ofPopStyle();
 
 		ofDrawBitmapString("Captured", capturedGray.getWidth() / 2, capturedGray.getHeight() + 30);	
@@ -168,7 +175,14 @@ void ofApp::draw(){
 
 	}
 	else {
-		drawContours(allBlobs);
+		if (saveFill) {
+			fillin = true;
+			drawContours(allBlobs);
+		}
+		if (saveOutline) {
+			fillin = false;
+			drawContours(allBlobs);
+		}
 	}
 
 	if (pdfIt) {
@@ -255,14 +269,9 @@ void ofApp::setupGui() {
 	gui.add(flipHorizontal.setup("flip horizontally", false));
 	gui.add(flipVertical.setup("flip vertically", false));
 	gui.add(invert.setup("invert", false));
-	gui.add(gaussianBlur.setup("gaussian blur", 1, 1, 20));
-	gui.add(blur.setup("blur", 1, 1, 20));
 	gui.add(thresholdValue.setup("threshold value", 100, 1, 255));
 	gui.add(dilateMultiple.setup("dilation multiple", 0, 0, 10));
 	gui.add(erodeMultiple.setup("erosion multiple", 0, 0, 10));
-	gui.add(polylineSmoothShape.setup("polyline smooth shape", 0.0, 0.0, 1.0));
-	gui.add(polylineSmoothSize.setup("polyline smooth size", 0, 0, 32));
-	gui.add(minContour.setup("minimum contour size", 10000, 0.0, (640 * 360) / 3));
 	gui.add(layers.setup("layers", 5, 2, 9));
 	gui.add(brMin.setup("Min", 0, 0, 150));
 	gui.add(brMax.setup("Max", 255, 150, 255));
@@ -270,8 +279,8 @@ void ofApp::setupGui() {
 	gui.add(bottom.setup("bottom", 1.0, 0.0, 1.0));
 	gui.add(left.setup("left", 0.0, 0.0, 1.0));
 	gui.add(right.setup("right", 1.0, 0.0, 1.0));
-
-
+	gui.add(saveOutline.setup("saveOutline", true));
+	gui.add(saveFill.setup("saveFill", true));
 
 }
 
@@ -407,7 +416,6 @@ ofImage ofApp::multImage(ofImage input1, ofImage input2) {
 	return input1;
 }
 
-
 void ofApp::drawPoints(vector<vector <ofPoint> > points) {
 
 	int layAmt = 255 / layers;
@@ -421,7 +429,6 @@ void ofApp::drawPoints(vector<vector <ofPoint> > points) {
 	}
 }
 
-
 vector<ofPolyline> ofApp::getContours(vector<vector <ofPoint> > points) {
 
 	vector<ofPolyline> polylines;
@@ -434,7 +441,7 @@ vector<ofPolyline> ofApp::getContours(vector<vector <ofPoint> > points) {
 				ofPoint aPoint = points[i][b];
 				p.addVertex(aPoint.x, aPoint.y);
 			}
-			p = p.getSmoothed(polylineSmoothSize, polylineSmoothShape);
+			//p = p.getSmoothed(polylineSmoothSize, polylineSmoothShape);
 			polylines.push_back(p);
 		}
 	}
@@ -450,16 +457,24 @@ void ofApp::drawContours(vector<vector <ofPoint> > points) {
 
 	//for (auto & line : polylines) {
 	for(int p = 0; p < polylines.size(); p++){
-		//ofNoFill();
-		ofFill();
-		ofSetColor(p * layAmt);
-		//line.draw();
+
 
 		// draw filled polyline
-		
+
 		int offsetX = 320 * (p % 3);
 
-		int offsetY = 240 * int (p / 3);
+		int offsetY = 240 * int(p / 3);
+
+		
+		ofSetColor(p * layAmt);
+
+		if (fillin) {
+			ofFill();
+		}
+		else {
+			ofNoFill();
+			//line.draw();
+		}
 
 		if (polylines[p].getVertices().size() != 0) {
 
@@ -474,9 +489,10 @@ void ofApp::drawContours(vector<vector <ofPoint> > points) {
 					ofVertex(polylines[p].getVertices().at(i).x + offsetX, polylines[p].getVertices().at(i).y + offsetY);
 				}
 			}
-			
+
 			ofEndShape();
 		}
+		
 	}
 }
 

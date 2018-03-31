@@ -46,14 +46,9 @@ class ofApp : public ofBaseApp{
 		ofxToggle			flipHorizontal;
 		ofxToggle			flipVertical;
 		ofxToggle			invert;
-		ofxIntSlider		gaussianBlur;
-		ofxIntSlider		blur;
 		ofxIntSlider		thresholdValue;
 		ofxIntSlider		dilateMultiple;
 		ofxIntSlider		erodeMultiple;
-		ofxIntSlider		polylineSmoothSize;
-		ofxIntSlider		minContour;
-		ofxFloatSlider		polylineSmoothShape;
 		ofxIntSlider		layers;
 		ofxIntSlider		brMin;
 		ofxIntSlider		brMax;
@@ -61,26 +56,18 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider		bottom;
 		ofxFloatSlider		left;
 		ofxFloatSlider		right;
-
-
-
+		ofxToggle			saveOutline;
+		ofxToggle			saveFill;
 
 		ofImage layeringBrightness(ofImage input);
-
 		ofImage layerByLayer(ofImage input, int lNum);
-
 		ofImage distributeBrightness(ofImage input);
-
 		ofImage multImage(ofImage input1, ofImage input2);
-
 		ofImage multipliedImg;
 
 		bool bNewFrame;
-	
 		bool bLearnBackground;
-
 		bool bShowVideo = true;
-
 		bool getFrame = false;
 		
 		vector <vector <ofPoint> > allBlobs;
@@ -97,4 +84,6 @@ class ofApp : public ofBaseApp{
 		ofImage cropSrc(ofImage input);
 
 		bool pdfIt = false;
+
+		bool fillin;
 };
