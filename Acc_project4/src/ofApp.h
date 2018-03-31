@@ -32,7 +32,8 @@ class ofApp : public ofBaseApp{
 		ofxCvGrayscaleImage		tempBk;
 		
 		ofImage		capturedImg;
-
+		ofxCvGrayscaleImage capturedGray;
+		ofImage layeredImg;
 
 		ofxCvContourFinder 	contourFinder;
 
@@ -56,9 +57,18 @@ class ofApp : public ofBaseApp{
 		ofxIntSlider		layers;
 		ofxIntSlider		brMin;
 		ofxIntSlider		brMax;
+		ofxFloatSlider		top;
+		ofxFloatSlider		bottom;
+		ofxFloatSlider		left;
+		ofxFloatSlider		right;
+
+
 
 
 		ofImage layeringBrightness(ofImage input);
+
+		ofImage layerByLayer(ofImage input, int lNum);
+
 		ofImage distributeBrightness(ofImage input);
 
 		ofImage multImage(ofImage input1, ofImage input2);
@@ -74,5 +84,17 @@ class ofApp : public ofBaseApp{
 		bool getFrame = false;
 		
 		vector <vector <ofPoint> > allBlobs;
+		vector <ofPoint> layerBlobs;
 
+		void drawPoints(vector<vector <ofPoint> > points);
+
+		vector<ofPolyline> getContours(vector<vector <ofPoint> > points);
+
+		void drawContours(vector<vector <ofPoint> > points);
+
+		void shadingFX(int fx);
+
+		ofImage cropSrc(ofImage input);
+
+		bool pdfIt = false;
 };
