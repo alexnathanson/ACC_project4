@@ -88,4 +88,6 @@ class ofApp : public ofBaseApp{
 		bool fillin;
 
 		ofFbo layerMask;
+
+		void gridIt();
 };

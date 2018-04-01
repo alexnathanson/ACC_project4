@@ -197,6 +197,8 @@ void ofApp::draw(){
 			fillin = false;
 			drawContours(allBlobs);
 		}
+
+		gridIt();
 	}
 
 	if (pdfIt) {
@@ -568,4 +570,18 @@ void ofApp::shadingFX(int fx) {
 			layerMask.end();*/
 			break;
 	}
+}
+
+void ofApp::gridIt() {
+	int gridX = ofGetWidth() / 3;
+	int gridY = ofGetHeight() / 3;
+
+	for (int x = 0; x < 4; x++) {
+		ofDrawLine(gridX * x, 0, gridX * x, ofGetHeight());
+	}
+
+	for (int y = 0; y < 4; y++) {
+		ofDrawLine(0, gridY * y, ofGetWidth(), gridY * y);
+	}
+
 }
