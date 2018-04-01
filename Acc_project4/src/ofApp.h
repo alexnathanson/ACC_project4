@@ -86,4 +86,6 @@ class ofApp : public ofBaseApp{
 		bool pdfIt = false;
 
 		bool fillin;
+
+		ofFbo layerMask;
 };

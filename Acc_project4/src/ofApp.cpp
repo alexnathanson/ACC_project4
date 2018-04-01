@@ -22,6 +22,9 @@ void ofApp::setup(){
 	layeredImg.allocate(320, 240, OF_IMAGE_COLOR);
 	capturedGray.allocate(320, 240);
 
+	//fbo
+	layerMask.allocate(320, 240, GL_LUMINANCE);
+
 	threshold = 20;
 }
 
@@ -36,6 +39,9 @@ void ofApp::update(){
 
 		colorImg.setFromPixels(vidGrabber.getPixels());
 		
+		//needed for some Mac cameras
+		//colorImg.resize(320, 240);
+
 		colorImg.setFromPixels(cropSrc(colorImg.getPixels()).getPixels());
 
 		//colorImg.remap(100, 100);
@@ -135,6 +141,8 @@ void ofApp::draw(){
 
 		ofPushMatrix();
 		colorImg.draw(0.0, 0.0);
+		//shadingFX(1);
+		//colorImg.getTexture().setAlphaMask(layerMask.getTexture());
 		ofDrawBitmapString("Original", colorImg.getWidth() / 2, colorImg.getHeight() + 30);
 		ofPopMatrix();
 
@@ -172,6 +180,12 @@ void ofApp::draw(){
 
 		ofDrawBitmapString("Captured", capturedGray.getWidth() / 2, capturedGray.getHeight() + 30);	
 		ofPopMatrix();
+
+		shadingFX(1);
+		layerMask.draw(colorImg.getWidth() * 2, colorImg.getWidth());
+
+		//instructions
+		ofDrawBitmapString("Press s to turn the image into layered shapes. Press p to export current screen to pdf", 20, ofGetHeight() - 30);
 
 	}
 	else {
@@ -515,7 +529,43 @@ ofImage ofApp::cropSrc(ofImage input) {
 void ofApp::shadingFX(int fx) {
 	//solid colors
 
-	//half tone dots
+	int sizeDots = 25;
+	int widthDots = 320 / sizeDots;
+	int heightDots = 240 / sizeDots;
 
-	//hash marks
+	int sizeLine = 5;
+	int amtLine = 320 / sizeLine / 2;
+
+	switch (fx) {
+		case 0: //shaded
+			break;
+		case 1: 	//half tone dots
+
+			
+			ofLogNotice("Half tone!");
+
+			layerMask.begin();
+			
+			ofSetColor(ofColor::white);
+
+			for (int xDots = 0; xDots < widthDots; xDots++) {
+				for (int yDots = 0; yDots < heightDots; yDots++) {
+					ofDrawEllipse((xDots * sizeDots) + (sizeDots/2.0), (yDots * sizeDots) + (sizeDots / 2.0), sizeDots, sizeDots);
+				}
+			}
+			
+			layerMask.end();
+			break;
+		case 2:	//hash marks
+			/* layerMask.begin();
+
+			ofSetColor(ofColor::white);
+
+			for (int xDots = 0; xDots < widthDots; xDots++) {
+				ofDrawLine((xDots * sizeDots) + (sizeDots / 2.0), (yDots * sizeDots) + (sizeDots / 2.0), sizeDots, sizeDots);
+			}
+
+			layerMask.end();*/
+			break;
+	}
 }
