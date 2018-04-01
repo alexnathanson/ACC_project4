@@ -181,11 +181,11 @@ void ofApp::draw(){
 		ofDrawBitmapString("Captured", capturedGray.getWidth() / 2, capturedGray.getHeight() + 30);	
 		ofPopMatrix();
 
-		shadingFX(1);
-		layerMask.draw(colorImg.getWidth() * 2, colorImg.getWidth());
+		//shadingFX(1);
+		//layerMask.draw(colorImg.getWidth() * 2, colorImg.getWidth());
 
 		//instructions
-		ofDrawBitmapString("Press s to turn the image into layered shapes. Press p to export current screen to pdf", 20, ofGetHeight() - 30);
+		ofDrawBitmapString("Press s to turn the image into layered shapes. Press p to export current screen to pdf. Press space bar to set background.", 20, ofGetHeight() - 30);
 
 	}
 	else {
@@ -573,8 +573,8 @@ void ofApp::shadingFX(int fx) {
 }
 
 void ofApp::gridIt() {
-	int gridX = ofGetWidth() / 3;
-	int gridY = ofGetHeight() / 3;
+	int gridX = 320;
+	int gridY = 240;
 
 	for (int x = 0; x < 4; x++) {
 		ofDrawLine(gridX * x, 0, gridX * x, ofGetHeight());
